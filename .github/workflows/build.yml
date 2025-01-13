@@ -1,0 +1,50 @@
+name: Build with Visual Studio 2015
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: windows-2019 # Windows environment that includes Visual Studio 2015.
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Visual Studio 2015 environment
+      # Ensure that the Visual Studio 2015 environment variables are correctly set.
+      run: |
+        "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\VsDevCmd.bat"
+
+    - name: Build Debug configuration
+      run: |
+        msbuild isdcc31.vcxproj /p:Configuration=Debug /p:Platform=Win32
+
+    - name: Build Release configuration
+      run: |
+        msbuild isdcc31.vcxproj /p:Configuration=Release /p:Platform=Win32
+
+    - name: Verify Debug executable
+      # Verify that the Debug executable was built successfully.
+      run: |
+        if not exist .\Debug\isdcc31.exe exit 1
+
+    - name: Verify Release executable
+      # Verify that the Release executable was built successfully.
+      run: |
+        if not exist .\Release\isdcc31.exe exit 1
+
+    - name: Upload Debug artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: isdcc31-debug
+        path: .\Debug\isdcc31.exe
+
+    - name: Upload Release artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: isdcc31-release
+        path: .\Release\isdcc31.exe
