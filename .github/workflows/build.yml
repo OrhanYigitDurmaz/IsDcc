@@ -8,27 +8,24 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019 # Windows environment with Visual Studio 2015.
+    runs-on: windows-2019 # Windows environment with Visual Studio 2015 pre-installed.
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
     - name: Setup Visual Studio 2015 environment
-      # Add the msbuild path explicitly to the system PATH
+      # Call the Visual Studio Developer Command Prompt to set up the environment.
+      shell: cmd
       run: |
-        $env:Path += ";C:\Program Files (x86)\MSBuild\14.0\Bin"
-        $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE"
-        $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"
-
-    - name: Build Debug configuration
-      # Use the msbuild command with the project file.
-      run: |
+        "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\VsDevCmd.bat"
         msbuild isdcc31.vcxproj /p:Configuration=Debug /p:Platform=Win32
 
     - name: Build Release configuration
+      shell: cmd
       run: |
-        msbuild isdcc31.vcxproj /p:Configuration=Release /p:Platform=Win32
+        "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\VsDevCmd.bat"
+        msbuild isdcc21.vcxproj /p:Configuration=Release /p:Platform=Win32
 
     - name: Verify Debug executable
       # Verify that the Debug executable was built successfully.
